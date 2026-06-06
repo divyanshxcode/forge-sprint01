@@ -5,22 +5,50 @@ description: Uses the local model to rewrite bad or missing titles and meta desc
 
 # Fixer sub-agent
 
-Turn detected problems into ready-to-use fixes. This is where the model earns its place.
+Your goal is to transform detected SEO issues into a set of precise, validated fixes. You do NOT detect issues; you consume the audit results from `outputs/report.json`.
 
-## Titles and meta descriptions
-For pages flagged `missing_title`, `title_too_long`, `missing_meta_description`, etc.:
-1. Ask the model to write an optimized title (≤ 60 characters / ≤ 561 pixels) and meta
-   description (≤ 155 characters) using the page's URL, H1, and existing copy as context.
-2. **Validate the length in code.** If the rewrite is over the limit, re-ask once. A
-   validation-and-retry loop is exactly the discipline the judges reward.
-3. Collect `{url, old, new}` for each.
+## Workflow
 
-## Redirect map
+### 1. Ingest Issues
+- Read `outputs/report.json`.
+- Focus only on these issue types:
+  - Titles: `missing_title`, `title_too_long`, `title_too_short`
+  - Meta: `missing_meta_description`, `meta_description_too_long`
+  - H1: `missing_h1`
+  - Broken: `broken_link`
+
+### 2. Execute Rewrites (The LLM Loop)
+For each affected URL, follow this strict discipline:
+
+#### Title Rewrites (≤ 60 chars / ≤ 561 px)
+1. **Analyze**: Use the URL, H1, and existing title as context.
+2. **Propose**: Write a compelling, SEO-optimized title.
+3. **Validate**: Run the proposal through the `seo.validator.validate_title()` helper.
+4. **Iterate**: If invalid, rewrite the title and validate again. Do this up to 2 times.
+5. **Collect**: Store as `{url, old, new}`.
+
+#### Meta Rewrites (≤ 155 chars)
+1. **Analyze**: Use the URL and page context.
+2. **Propose**: Write a clear, click-through-optimized meta description.
+3. **Validate**: Run through `seo.validator.validate_meta()`.
+4. **Iterate**: If invalid, rewrite and validate.
+5. **Collect**: Store as `{url, old, new}`.
+
+#### H1 Rewrites
+1. Propose a descriptive, keyword-relevant H1.
+2. Validate length (keep it concise, typically < 70 chars).
+
+### 3. Build Redirect Map
 For `broken_link` (4xx) pages:
-1. Find the closest live (200, indexable) URL — by path similarity or section.
-2. Produce `{from, to, reason}` for each.
+1. Find the closest live (200, indexable) URL using semantic path similarity.
+2. Produce a map: `{from, to, reason}`.
 
-Finally call MCP `set_fixes(titles, redirect_map)`.
+## Final Delivery
+Once all applicable fixes are generated and validated:
+1. Call the MCP tool `set_fixes(titles, redirect_map)`.
+2. Report the totals: "Rewrote X titles, Y metas, Z H1s, and mapped W redirects."
 
-Keep each rewrite a small, separate model call so context stays tight and quota stays low.
-Never feed the whole crawl to the model — only the one page you are fixing.
+## Hard Constraints
+- **One page at a time**: Keep model calls small. Never feed the whole crawl into one prompt.
+- **Code-based Validation**: Never trust the LLM's "count" of characters. Always use the validator.
+- **No Detection**: Do not attempt to find new issues; only fix the ones provided in the report.
