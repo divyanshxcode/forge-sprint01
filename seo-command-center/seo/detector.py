@@ -95,6 +95,24 @@ def detect(rows: list[dict]) -> list[dict]:
         [r["Address"] for r in idx200 if _int(r.get("Meta Description 1 Length")) > 155],
         "Meta descriptions likely truncated in search results.")
 
+    # --- Headings ---
+    add("missing_h1", "Medium",
+        [r["Address"] for r in html if is_200(r) and not (r.get("H1-1", "") or "").strip()],
+        "HTML pages with no H1 tag.")
+
+    by_h1 = defaultdict(list)
+    for r in idx200:
+        h = (r.get("H1-1", "") or "").strip()
+        if h:
+            by_h1[h].append(r["Address"])
+    dup_h1 = [u for urls in by_h1.values() if len(urls) > 1 for u in urls]
+    add("duplicate_h1", "Low", dup_h1, "Indexable pages sharing an identical H1.")
+
+    # --- Content ---
+    add("thin_content", "Low",
+        [r["Address"] for r in idx200 if _int(r.get("Word Count")) < 200],
+        "Indexable pages with very low word count.")
+
     # --- Response codes ---
     add("broken_link", "High",
         [r["Address"] for r in rows if 400 <= _int(r.get("Status Code")) <= 499],

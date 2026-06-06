@@ -2,11 +2,11 @@
   "site": "nmgtechnologies.com",
   "urls_crawled": 456,
   "summary": {
-    "total_issues": 7,
+    "total_issues": 10,
     "by_severity": {
       "High": 2,
-      "Medium": 3,
-      "Low": 2
+      "Medium": 4,
+      "Low": 4
     }
   },
   "issues": [
@@ -205,6 +205,61 @@
       "explanation": "Meta descriptions likely truncated in search results."
     },
     {
+      "type": "missing_h1",
+      "severity": "Medium",
+      "affected_urls": [
+        "https://nmgtechnologies.com/company/process/",
+        "https://nmgtechnologies.com/contact-us"
+      ],
+      "count": 2,
+      "explanation": "HTML pages with no H1 tag."
+    },
+    {
+      "type": "duplicate_h1",
+      "severity": "Low",
+      "affected_urls": [
+        "https://nmgtechnologies.com/blog",
+        "https://nmgtechnologies.com/blog/author/nishtha",
+        "https://nmgtechnologies.com/blog/tag/design",
+        "https://nmgtechnologies.com/blog/tag/events",
+        "https://nmgtechnologies.com/blog/tag/events/page/2",
+        "https://nmgtechnologies.com/blog/tag/featured",
+        "https://nmgtechnologies.com/blog/tag/growth",
+        "https://nmgtechnologies.com/blog/tag/marketing",
+        "https://nmgtechnologies.com/blog/tag/mobile",
+        "https://nmgtechnologies.com/blog/tag/outsourcing",
+        "https://nmgtechnologies.com/blog/tag/search-engine-optimization",
+        "https://nmgtechnologies.com/blog/tag/technology",
+        "https://nmgtechnologies.com/blog/tag/web",
+        "https://nmgtechnologies.com/clients/case-studies/",
+        "https://nmgtechnologies.com/success-stories",
+        "https://nmgtechnologies.com/work/advanced-seo/",
+        "https://nmgtechnologies.com/work/ecommerce/",
+        "https://nmgtechnologies.com/work/mobile/",
+        "https://nmgtechnologies.com/work/web/"
+      ],
+      "count": 19,
+      "explanation": "Indexable pages sharing an identical H1."
+    },
+    {
+      "type": "thin_content",
+      "severity": "Low",
+      "affected_urls": [
+        "https://nmgtechnologies.com/blog/tag/events/page/2",
+        "https://nmgtechnologies.com/blog/tag/marketing",
+        "https://nmgtechnologies.com/blog/tag/mobile",
+        "https://nmgtechnologies.com/blog/tag/outsourcing",
+        "https://nmgtechnologies.com/blog/tag/search-engine-optimization",
+        "https://nmgtechnologies.com/company/about-us",
+        "https://nmgtechnologies.com/contact-us",
+        "https://nmgtechnologies.com/get-custom-pricing",
+        "https://nmgtechnologies.com/sitemap",
+        "https://nmgtechnologies.com/success-stories"
+      ],
+      "count": 10,
+      "explanation": "Indexable pages with very low word count."
+    },
+    {
       "type": "broken_link",
       "severity": "High",
       "affected_urls": [
@@ -243,7 +298,7 @@
     "Fix the 6 High-severity 'broken_link' issue(s) first.",
     "Fix the 63 Medium-severity 'title_too_long' issue(s) first.",
     "Fix the 16 Medium-severity 'duplicate_meta_description' issue(s) first.",
-    "Fix the 7 Medium-severity 'redirect' issue(s) first."
+    "Fix the 2 Medium-severity 'missing_h1' issue(s) first."
   ],
   "run_meta": {
     "model": "qwen3.5:9b",
