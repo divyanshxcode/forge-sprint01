@@ -110,7 +110,7 @@ def detect(rows: list[dict]) -> list[dict]:
 
     # --- Content ---
     add("thin_content", "Low",
-        [r["Address"] for r in idx200 if _int(r.get("Word Count")) < 200],
+        [r["Address"] for r in rows if indexable(r) and _int(r.get("Word Count")) < 200],
         "Indexable pages with very low word count.")
 
     # --- Response codes ---
