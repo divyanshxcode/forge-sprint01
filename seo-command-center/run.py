@@ -36,6 +36,12 @@ def main():
     server.seo_load(args.export_dir)
     res = server.seo_detect()
 
+    # --- Fixer Agent Integration ---
+    from seo import fixer
+    title_fixes, redirect_map, fix_counts = fixer.run_fixer(server.RUN, args.export_dir)
+    server.seo_set_fixes(title_fixes, redirect_map)
+    # -------------------------------
+
     # starter recommendations from the detected issues (the skill writes richer ones)
     issues = sorted(server.RUN["issues"], key=lambda x: {"High":0,"Medium":1,"Low":2}.get(x["severity"],3))
     recs = []
@@ -54,6 +60,7 @@ def main():
     print(f"Site         : {server.RUN['site']}  ({server.RUN['urls']} URLs)")
     print(f"Total issues : {s['total_issues']}  (High {s['by_severity'].get('High',0)} / "
           f"Medium {s['by_severity'].get('Medium',0)} / Low {s['by_severity'].get('Low',0)})")
+    print(f"Fixes generated: {fix_counts['titles']} titles, {fix_counts['metas']} metas, {fix_counts['h1s']} H1s, {fix_counts['redirects']} redirects")
     print("Wrote outputs/report.json and outputs/report.html")
 
 
