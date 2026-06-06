@@ -1,66 +1,150 @@
-# SEO Command Center — Forge Sprint 01 starter
+# SEO Command Center
 
-A Claude Code **plugin** that ingests a **Screaming Frog SEO export**, audits it against
-the rulebook, prioritizes the issues, writes fixes, and renders a **live dashboard** plus
-an exportable client report. The plumbing works out of the box — you implement the SEO
-logic and push accuracy on the hidden export.
+SEO Command Center ingests a Screaming Frog SEO export, detects technical SEO issues
+against the sprint rulebook, generates heuristic fixes, and writes a live dashboard plus
+client-ready report artifacts.
 
-## Quick start (headless, proves it runs)
+The project can run in two modes:
+
+- Headless Python runner: easiest way to install, run, and verify the full pipeline.
+- Claude Code plugin/MCP server: exposes the same pipeline as tools and serves the live
+  dashboard on localhost.
+
+## Prerequisites
+
+- Python 3.9+.
+- A Screaming Frog export folder containing `internal_all.csv`.
+- Optional: `mcp` Python package if you want to use the Claude Code MCP tools/plugin.
+
+No JavaScript build step is required. The dashboard is static HTML/JS served by the
+Python MCP server. The chart in the dashboard loads Chart.js from a CDN, so that page
+needs internet access for the chart visualization.
+
+## Install
+
+From the repository root:
+
 ```bash
-pip install mcp          # exposes MCP tools to Claude Code (dashboard works without it too)
-python run.py sample-export/
-# open the live cockpit:
-#   http://localhost:7700
-# outputs land in outputs/report.json and outputs/report.html
+cd seo-command-center
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
 ```
 
-## Inside Claude Code
-```
-/seo-audit sample-export/
+For the headless runner, that is enough; the core pipeline uses the Python standard
+library.
+
+For Claude Code/MCP usage, install the MCP SDK into the same environment:
+
+```bash
+python3 -m pip install mcp
 ```
 
-## What's here
+## Run The Audit
+
+The sample export in this repo is at `../sample-export` when you are inside
+`seo-command-center`.
+
+Run without the dashboard:
+
+```bash
+python3 run.py ../sample-export --no-dashboard
 ```
+
+Run with the live dashboard:
+
+```bash
+python3 run.py ../sample-export
+```
+
+Then open:
+
+```text
+http://localhost:7700
+```
+
+You can also run the same command from the repository root:
+
+```bash
+python3 seo-command-center/run.py sample-export --no-dashboard
+python3 seo-command-center/run.py sample-export
+```
+
+## Outputs
+
+Each run writes:
+
+- `outputs/report.json`: structured audit output used by the grader/reporting flow.
+- `outputs/report.html`: shareable client-facing HTML report.
+
+The terminal summary includes the detected site, crawled URL count, issue totals by
+severity, and generated fix counts.
+
+## Input Folder
+
+The export folder must contain:
+
+```text
+internal_all.csv
+```
+
+The detector reads Screaming Frog-style columns such as `Address`, `Status Code`,
+`Content Type`, `Indexability`, `Title 1`, `Meta Description 1`, `H1-1`, `Word Count`,
+`Inlinks`, `Redirect URL`, and `Response Time`.
+
+## Claude Code Plugin Usage
+
+The plugin manifest lives in `.claude-plugin/plugin.json`. It registers:
+
+- Skill: `skills/seo-audit/SKILL.md`
+- Slash command: `commands/seo-audit.md`
+- Agents: `agents/`
+- MCP server: `mcp/server.py`
+
+Inside Claude Code, run:
+
+```text
+/seo-audit ../sample-export
+```
+
+If you need to start the MCP server manually:
+
+```bash
+python3 mcp/server.py
+```
+
+The MCP server exposes tools for loading a crawl, detecting issues, attaching fixes,
+writing `report.json`, and exporting `report.html`. It also hosts the dashboard at
+`http://localhost:7700`.
+
+## Useful Files
+
+```text
 seo-command-center/
-├── .claude-plugin/plugin.json   plugin manifest (skill + command + agents + MCP)
-├── .claude/                     audit hooks (settings.json + hooks/audit.sh) → records your process
-├── skills/seo-audit/SKILL.md    orchestrator
-├── agents/                      ingest, auditor, fixer, reporter (sub-agents)
-├── commands/seo-audit.md        the /seo-audit command
-├── mcp/server.py                local MCP server + live dashboard host (localhost:7700)
-├── seo/detector.py              deterministic issue detection  ← EXTEND THIS to the full rulebook
-├── dashboard/                   index.html + app.js (the cockpit)
-├── scripts/export-transcript.sh saves your session transcript to agent-log.md (commit it)
-├── run.py                       headless runner (the grader's entry point)
-└── outputs/                     report.json + report.html (generated)
+├── run.py                    # Headless pipeline entry point
+├── mcp/server.py             # MCP tools + dashboard HTTP/SSE server
+├── seo/detector.py           # Deterministic rulebook issue detection
+├── seo/fixer.py              # Heuristic title/meta/H1/redirect fix generation
+├── seo/validator.py          # Rewrite validation helpers
+├── dashboard/                # Static live dashboard assets
+├── outputs/                  # Generated report artifacts
+├── commands/seo-audit.md     # Claude Code slash command
+├── skills/seo-audit/SKILL.md # Claude Code skill instructions
+└── agents/                   # Claude Code sub-agent prompts
 ```
 
-## Your job in the Sprint
-1. **Complete `seo/detector.py`** to cover the full `rulebook.md` (the starter only does a
-   few issue types). Accuracy on the hidden export is the biggest part of your score.
-2. **Implement the fixer** (titles/meta rewrites within limits + a redirect map) for the
-   champion tier — see `agents/fixer.md`.
-3. **Improve the dashboard / report** to be genuinely client-ready.
-4. **Commit incrementally** (≥10 commits) and let the audit hooks record your process.
+The rule definitions are in the repository root at `rulebook.md`.
 
-## Process + memory files you must maintain (graded — see challenge brief section 08)
-These are how the judges assess *how you worked with the AI*, not just the result:
-- `.claude/audit.jsonl` — auto-written by the hooks (every tool call). Commit it. Keep
-  `.claude/settings.json` in place so the hooks keep recording.
-- `agent-log.md` — run `bash scripts/export-transcript.sh` at the end to export your session
-  transcript. Commit it.
-- `CLAUDE.md` — your project memory / instructions for the agent. **Edit this as you build** —
-  good context engineering is the clearest signal of good practice.
-- `PROMPTS.md` — log your key prompts (the ones that moved the build).
-- `DECISIONS.md` — log your real decisions and what you learned / fixed.
+## Troubleshooting
 
-The three records (audit log, transcript, git history) must agree — that is how a real process
-is told apart from a fabricated one. Do not edit or fake the logs.
+- `python: command not found`: use `python3`.
+- `No such file or directory: internal_all.csv`: pass the export directory, not the CSV
+  file itself.
+- Port `7700` is busy: run with another port, for example:
 
-## The model
-Run on the free local stack (Claude Code + Ollama). Set `OLLAMA_CONTEXT_LENGTH=65536`,
-use a tool-trained model (`qwen3.5:9b` or `gemma4:31b-cloud`), not `qwen2.5-coder`.
+```bash
+SEO_PORT=7788 python3 run.py ../sample-export
+```
 
-## Note
-The dashboard renders the operator's own crawl data on localhost; it is a local cockpit,
-not a hardened public server. The shareable artifact is the exported `report.html`.
+- MCP import errors: activate your virtual environment and run
+  `python3 -m pip install mcp`.
