@@ -38,7 +38,10 @@ def main():
 
     # --- Fixer Agent Integration ---
     from seo import fixer
-    title_fixes, redirect_map, fix_counts = fixer.run_fixer(server.RUN, args.export_dir)
+    title_fixes, meta_fixes, h1_fixes, redirect_map, fix_counts = fixer.run_fixer(server.RUN, args.export_dir)
+    # The server's set_fixes expects titles and redirect_map.
+    # We combine titles and metas into a single list for the report if necessary,
+    # but for the MCP tool we send titles and redirects.
     server.seo_set_fixes(title_fixes, redirect_map)
     # -------------------------------
 
