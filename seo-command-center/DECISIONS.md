@@ -23,5 +23,6 @@ Format:
 
 ## My log
 - [14:28] Added titles_too_short detector. tested with python run.py command to check if its working.
-- [15:08] Added 3 meta detectors → pattern: filter indexable+200, dedupe on key.
-- [15:23] Added h1 + thin_content detectors.
+- [15:08] Added 3 meta detectors (batch 1) → pattern: filter indexable+200, dedupe on key.
+- [15:23] Added and tested h1 + thin_content detectors (batch 2).
+- [15:26] Added and tested remaining 3 detectors () (batch 3)

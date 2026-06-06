@@ -114,6 +114,13 @@ def detect(rows: list[dict]) -> list[dict]:
         "Indexable pages with very low word count.")
 
     # --- Response codes ---
+    redirects = {r["Address"]: r.get("Redirect URL") for r in rows if 300 <= _int(r.get("Status Code")) <= 399}
+    chain_urls = set()
+    for start_url, target_url in redirects.items():
+        if target_url and target_url in redirects:
+            chain_urls.add(start_url)
+    add("redirect_chain", "High", list(chain_urls), "URLs that are part of a redirect chain (point to another redirect).")
+
     add("broken_link", "High",
         [r["Address"] for r in rows if 400 <= _int(r.get("Status Code")) <= 499],
         "URLs returning a client error (4xx).")
@@ -123,6 +130,15 @@ def detect(rows: list[dict]) -> list[dict]:
     add("redirect", "Medium",
         [r["Address"] for r in rows if 300 <= _int(r.get("Status Code")) <= 399],
         "URLs that redirect (3xx).")
+
+    # --- Indexability & Performance ---
+    add("non_indexable_but_linked", "Medium",
+        [r["Address"] for r in rows if (r.get("Indexability", "") or "").strip().lower() == "non-indexable" and _int(r.get("Inlinks")) > 0],
+        "Non-indexable pages that are still linked internally.")
+
+    add("slow_page", "Low",
+        [r["Address"] for r in rows if _float(r.get("Response Time")) > 1.0],
+        "Pages with response time greater than 1 second.")
 
     # --- Orphan pages ---
     add("orphan_page", "Medium",
