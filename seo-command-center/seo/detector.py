@@ -73,6 +73,11 @@ def detect(rows: list[dict]) -> list[dict]:
          if _int(r.get("Title 1 Pixel Width")) > 561 or _int(r.get("Title 1 Length")) > 60],
         "Titles likely truncated in search results.")
 
+    add("title_too_short", "Low",
+        [r["Address"] for r in idx200
+         if 0 < _int(r.get("Title 1 Length")) < 30],
+        "Titles that are too short to be descriptive.")
+
     # --- Response codes ---
     add("broken_link", "High",
         [r["Address"] for r in rows if 400 <= _int(r.get("Status Code")) <= 499],
