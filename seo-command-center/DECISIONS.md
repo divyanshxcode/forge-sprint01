@@ -22,4 +22,4 @@ Format:
 ---
 
 ## My log
-- `[--:--]` ...
+- [14:28] Added titles_too_short detector. tested with python run.py command to check if its working.
