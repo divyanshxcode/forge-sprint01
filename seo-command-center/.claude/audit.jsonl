@@ -93,3 +93,4 @@
 {"ts":"2026-06-06T11:24:31.3NZ","session_id":"616f8bed-9b41-485c-960c-5c6ac32a9340","hook":"PreToolUse","tool":"Read","command":"/Users/divyansh-air/Local Disk/Codes/Github Clones/forge-sprint01/seo-command-center/outputs/report.json","exit_code":"","output_preview":""}
 {"ts":"2026-06-06T11:24:31.3NZ","session_id":"616f8bed-9b41-485c-960c-5c6ac32a9340","hook":"PostToolUse","tool":"Read","command":"/Users/divyansh-air/Local Disk/Codes/Github Clones/forge-sprint01/seo-command-center/outputs/report.json","exit_code":"","output_preview":""}
 {"ts":"2026-06-06T11:24:59.3NZ","session_id":"616f8bed-9b41-485c-960c-5c6ac32a9340","hook":"Stop","tool":"","command":"","exit_code":"","output_preview":""}
+{"ts":"2026-06-06T11:28:16.3NZ","session_id":"616f8bed-9b41-485c-960c-5c6ac32a9340","hook":"SubagentStop","tool":"","command":"","exit_code":"","output_preview":""}

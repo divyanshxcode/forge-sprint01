@@ -30,5 +30,7 @@ Format:
 - [15:59] Fixer agent isn't implemented by model. it gave a simulator code.
 - [16:29] Explained the detailed purpose of fixer agent and told to integrate with MCP pipeline
 - [16:41] Integrated and validate the fixer agent code.
-
+- [16:50] Found a bug with fixer agent. still uses simulated data.
+- [16:58] Fixed fixer agent. noe using real data
+- [] 
 

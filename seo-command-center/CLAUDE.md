@@ -30,5 +30,7 @@ dashboard at localhost:7700, and outputs `outputs/report.json` + `outputs/report
 - Run `python run.py sample-export/` to test end to end.
 
 ## Things I have learned during the build (update this as you go)
-- (e.g. "SF leaves Title 1 blank on redirected URLs — must filter Status Code 200 first")
-- ...
+- Added all detectors in seo/detectors.py
+- Fixer agent must both detect AND fix (run.py integration was missing).
+- Validation is critical: heuristic rewrites still need length checks before accepting.
+- Meta/H1 fixes as valuable as titles — must store and return all fix types.

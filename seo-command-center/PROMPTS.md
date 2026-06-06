@@ -23,5 +23,6 @@ Format per entry:
 ---
 
 ## My prompts
-1. ...
-2. ...
+1. - **Prompt:** "Fix seo/fixer.py: use real model to generate title/meta/H1 rewrites, validate with validator.py, store ALL fixes (not just titles). Return title_fixes, meta_fixes, h1_fixes, redirect_map."
+- **For:** generating actionable SEO fixes for champion tier
+- **Revised?** Yes — first pass threw away meta/h1 fixes. Added validation loop and proper storage.
